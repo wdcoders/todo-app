@@ -1,0 +1,38 @@
+1. php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+2. php artisan migrate (After doing migration changes)
+3. Create "app/Traits/ApiResponser.php"
+    <?php
+
+        namespace App\Traits;
+
+        use Illuminate\Support\Collection;
+        use Illuminate\Support\Facades\Cache;
+        use Illuminate\Database\Eloquent\Model;
+        use Illuminate\Support\Facades\Validator;
+        use Illuminate\Pagination\LengthAwarePaginator;
+
+        trait ApiResponser{
+
+            protected function successResponse($data, $message = null, $code = 200)
+            {
+                return response()->json([
+                    'status'=> 'Success', 
+                    'message' => $message, 
+                    'data' => $data
+                ], $code);
+            }
+
+            protected function errorResponse($message = null, $code)
+            {
+                return response()->json([
+                    'status'=>'Error',
+                    'message' => $message,
+                    'data' => null
+                ], $code);
+            }
+
+    }
+
+4. php artisan make:controller Api/AuthController
+5. php artisan make:request StoreUserRequest
+
