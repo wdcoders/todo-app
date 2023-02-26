@@ -14,8 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->integer('created_by')->nullable();
-            $table->integer('updated_by')->nullable();
+            $table->bigInteger('created_by')->after('description')->unsigned();
+            $table->bigInteger('updated_by')->after('created_by')->unsigned();
+            $table->tinyInteger('status')->after('updated_by')->default(1);
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            
         });
     }
 

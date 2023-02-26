@@ -11,6 +11,10 @@ class Project extends Model
     protected $fillable = [
         'title',
         'description',
+        'status',
+        'created_at',
+        'updated_at',
+        'updated_by'
     ];
 
     public function user(){

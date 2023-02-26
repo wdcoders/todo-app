@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreProjectRequest;
-use App\Http\Requests\UpdateProjectRequest;
-use App\Http\Resources\ProjectResource;
-use App\Models\Project;
+use App\Http\Requests\StoreTaskRequest;
+use App\Http\Resources\TaskResource;
+use App\Models\Task;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
-class ProjectController extends Controller
+class TaskController extends Controller
 {
 
     use ApiResponser;
-
+    
     /**
      * Display a listing of the resource.
      *
@@ -24,8 +23,8 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return ProjectResource::collection(
-            Project::query()->orderBy("id", "desc")->paginate(10)
+        return TaskResource::collection(
+            Task::query()->orderBy("id", "desc")->paginate(10)
         );
     }
 
@@ -34,9 +33,8 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(StoreTaskRequest $request)
     {
-        //
     }
 
     /**
@@ -45,21 +43,24 @@ class ProjectController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreProjectRequest $request)
+    public function store(StoreTaskRequest $request)
     {
         $data = $request->validated();
 
-        $project = new Project;
-        $project->title = $data["title"];
-        $project->slug = Str::slug($data["title"]);
-        $project->description = $data["description"];
-        $project->status = $data["status"] == true? 1:0;
-        $project->created_by = Auth::user()->id;
-        $project->updated_by = Auth::user()->id;
+        $task = new Task;
+        $task->title = $data["title"];
+        $task->project_id = $data["project_id"];
+        $task->slug = Str::slug($data["title"]);
+        $task->report_to = Auth::user()->id;
+        $task->assigned_to = Auth::user()->id;
+        $task->description = $data["description"];
+        $task->status = ($request->status != "")? 1 : 0;
+        $task->created_by = Auth::user()->id;
+        $task->updated_by = Auth::user()->id;
 
-        $project->save();
+        $task->save();
 
-        return $this->successResponse($project);
+        return $this->successResponse($task);
     }
 
     /**
@@ -68,9 +69,9 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Project $project)
+    public function show($id)
     {
-        return $this->successResponse($project);
+        //
     }
 
     /**
@@ -91,17 +92,9 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProjectRequest $request, Project $project)
+    public function update(Request $request, $id)
     {
-        $data = $request->validated();
-        
-        $project->title = $data["title"];
-        $project->slug = Str::slug($data["title"]);
-        $project->description = $data["description"];
-        $project->updated_by = Auth::user()->id;
-        $project->update($data);
-
-        return $this->successResponse(new ProjectResource($project));
+        //
     }
 
     /**
